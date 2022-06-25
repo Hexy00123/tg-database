@@ -14,12 +14,12 @@ def start(update: Updater, context):
     msg: telegram.Message = update.message
     user_id = msg.from_user.id
     username = msg.from_user.username
-
+    '''
     db_object.execute(f'select id from users where id={user_id}')
     result = db_object.fetchone()
     if not result:
         db_object.execute(f'insert into users(id, username, messages) values ({user_id}, {username}, 0)')
-
+    '''
     msg.reply_text(f'Добавлен пользователь\nid:{user_id}\nusername:{username}')
 
 
