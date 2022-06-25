@@ -29,7 +29,7 @@ def help(update, context):
 
 def debug(update, context):
     msg: telegram.Message = update.message
-    msg.reply_text(eval(msg.text))
+    msg.reply_text(str(eval(msg.text)))
 
 def main():
     dp.add_handler(CommandHandler("start", start))
