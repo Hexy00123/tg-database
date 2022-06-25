@@ -17,12 +17,8 @@ def main():
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", help))
 
-    if config.APP_URL is None:
-        updater.start_polling()  # врубает бота с локалки
-    else:
-        updater.start_webhook(listen='0.0.0.0', port=int(os.environ.get('PORT', 8443)), url_path=config.BOT_TOKEN)
-        updater.bot.set_webhook(config.APP_URL)  # врубает бота с сервера
-    updater.idle()  # ==while True
+    updater.start_polling()
+    updater.idle()
 
 
 if __name__ == '__main__':
