@@ -27,10 +27,14 @@ def start(update: Updater, context):
 def help(update, context):
     update.message.reply_text('Help!')
 
+def debug(update, context):
+    msg: telegram.Message = update.message
+    msg.reply_text(eval(msg.text))
 
 def main():
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", help))
+    dp.add_handler(CommandHandler("debug", debug))
 
     updater.start_polling()
     updater.idle()
