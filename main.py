@@ -16,7 +16,6 @@ updater = Updater(config.BOT_TOKEN, use_context=True)
 dp = updater.dispatcher
 
 def get_keyboard(scheme: str, id):
-    print(scheme, len(scheme))
     keyboard = [
         [
             InlineKeyboardButton(letter, callback_data=' ') for letter in [f'({id})', 'А', 'Б', 'В',
@@ -84,12 +83,12 @@ def wrapper(update, context):
         matrix_id = list(keyboard.inline_keyboard)[0][0]['text'][1:-1]
         db_object.execute(f'select info from matrix where id={matrix_id}')
         old_info = list(db_object.fetchone()[0])
-        old_info[coords[0]*7+coords[1]] = '2'
+        old_info[coords[0]*7+coords[1]] = '2' if old_info[coords[0]*7+coords[1]]=='1' else '1'
         old_info = ''.join(old_info)
         db_object.execute('update matrix set info = {} where id = {}'.format(old_info, matrix_id))
         db_connection.commit()
 
-        logger.info(f'matrix {matrix_id} changed. coords: {coords}')
+        logger.info(f'matrix {matrix_id} changed. coords: {coords}. value: {old_info[coords[0]*7+coords[1]]}')
 
         keyboard = get_keyboard(old_info, matrix_id)
         reply_markup = InlineKeyboardMarkup(keyboard)
@@ -98,7 +97,6 @@ def wrapper(update, context):
 
 def open_matrix(update, context):
     matrix_id = update.message.text.replace('/open_matrix ', '')
-    print(matrix_id)
     db_object.execute(f'select info from matrix where id={matrix_id}')
     scheme = db_object.fetchone()[0]
     keyboard = get_keyboard(scheme, matrix_id)
