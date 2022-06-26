@@ -1,8 +1,13 @@
 import psycopg2
 import config
 import telegram
+import logging
 from telegram.ext import Updater, CommandHandler, MessageHandler, CallbackQueryHandler
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardRemove
+
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 db_connection = psycopg2.connect(config.DB_URI, sslmode='require')
 db_object = db_connection.cursor()
@@ -37,6 +42,7 @@ def start(update: Updater, context):
         db_object.execute('INSERT INTO users(id, username, messages) VALUES (%s, %s, %s)', (user_id, username, 0))
         db_connection.commit()
         msg.reply_text(f'Added user\nid:{user_id}\nname:{username}')
+        logger.info(f'added user {user_id} {username}')
     else:
         msg.reply_text(f'User {username} is exist')
 
@@ -61,6 +67,8 @@ def create_matrix(update, context):
     db_object.execute('INSERT INTO matrix(id, user_id, info) VALUES (%s, %s, %s)', (new_id, user_id, '1' * 70))
     db_connection.commit()
 
+    logger.info(f'new matrix - id = {new_id}, us_id = {user_id}')
+
     keyboard = get_keyboard('1' * 70, new_id)
     reply_markup = InlineKeyboardMarkup(keyboard)
     update.message.reply_text(f'id={new_id}', reply_markup=reply_markup)
@@ -80,6 +88,8 @@ def wrapper(update, context):
         old_info = ''.join(old_info)
         db_object.execute('update matrix set info = {} where id = {}'.format(old_info, matrix_id))
         db_connection.commit()
+
+        logger.info(f'matrix {matrix_id} changed. coords: {coords}')
 
         keyboard = get_keyboard(old_info, matrix_id)
         reply_markup = InlineKeyboardMarkup(keyboard)
