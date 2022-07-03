@@ -3,7 +3,7 @@ import psycopg2
 import config
 import telegram
 import logging
-from flask import Flask
+
 from telegram.ext import Updater, CommandHandler, MessageHandler, CallbackQueryHandler
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardRemove
 
@@ -17,7 +17,6 @@ db_object = db_connection.cursor()
 updater = Updater(config.BOT_TOKEN, use_context=True)
 dp = updater.dispatcher
 
-app = Flask(__name__)
 
 def get_keyboard(scheme: str, id):
     keyboard = [
@@ -116,8 +115,6 @@ def main():
     dp.add_handler(CommandHandler("open_matrix", open_matrix))
     dp.add_handler(CallbackQueryHandler(wrapper))
 
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
     updater.start_polling()
     updater.idle()
 
