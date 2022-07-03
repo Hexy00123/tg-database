@@ -120,4 +120,8 @@ def main():
 
 
 if __name__ == '__main__':
+  try:
     main()
+  except Exception as e:
+    logger.info(f'ERROR: {e}')
+    
